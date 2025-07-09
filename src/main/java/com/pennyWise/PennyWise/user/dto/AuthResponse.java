@@ -1,8 +1,6 @@
 package com.pennyWise.PennyWise.user.dto;
 
+public class AuthResponse{
 
-public record AuthResponse (
-    String name,
-    String email
-){
 }
+

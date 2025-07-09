@@ -1,6 +1,5 @@
 package com.pennyWise.PennyWise.user.service;
 
-import com.pennyWise.PennyWise.user.dto.AuthResponse;
 import com.pennyWise.PennyWise.user.dto.RegisterRequest;
 import com.pennyWise.PennyWise.user.model.User;
 import com.pennyWise.PennyWise.user.repository.UserRepository;
@@ -26,7 +25,7 @@ public class UserService {
         repo.save(user1);
     }
     
-    public void deleteUser(String email) {
+   /* public void deleteUser(String email) {
         User u = repo.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));;
         repo.delete(u);
@@ -41,5 +40,5 @@ public class UserService {
         return response;
 
     }
-
+*/
 }

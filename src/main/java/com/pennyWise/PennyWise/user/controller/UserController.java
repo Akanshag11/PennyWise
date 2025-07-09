@@ -1,6 +1,5 @@
 package com.pennyWise.PennyWise.user.controller;
 
-import com.pennyWise.PennyWise.user.dto.AuthResponse;
 import com.pennyWise.PennyWise.user.dto.RegisterRequest;
 import com.pennyWise.PennyWise.user.model.User;
 import com.pennyWise.PennyWise.user.repository.UserRepository;
@@ -25,7 +24,7 @@ public class UserController {
     private UserRepository userRepository;
 
 
-    @GetMapping
+   /* @GetMapping
     public ResponseEntity<List<AuthResponse>> getAllUsers() {
         List<User> users = userRepository.findAll();
 
@@ -40,8 +39,10 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
 
-        return ResponseEntity.ok(service.getUser(List.of(userOpt.get())));
-    }
+        // Convert single user to a list of AuthResponse
+        List<AuthResponse> response = service.getUser(List.of(userOpt.get()));
+        return ResponseEntity.ok(response);
+    }*/
 
 
     @PostMapping("/register")
@@ -54,11 +55,11 @@ public class UserController {
         service.register(req);
         return ResponseEntity.ok("User registered -> " + req.getEmail());
     }
-    @DeleteMapping
+   /* @DeleteMapping
     public ResponseEntity<String> deleteUser (@RequestBody RegisterRequest req) {
         service.deleteUser(req.getEmail ());
         return ResponseEntity.ok("User deleted -> " + req.getEmail());
     }
-
+*/
     
 }
