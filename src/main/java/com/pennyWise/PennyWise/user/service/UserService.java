@@ -1,10 +1,13 @@
 package com.pennyWise.PennyWise.user.service;
 
+import com.pennyWise.PennyWise.user.dto.AuthResponse;
 import com.pennyWise.PennyWise.user.dto.RegisterRequest;
 import com.pennyWise.PennyWise.user.model.User;
 import com.pennyWise.PennyWise.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.List;
 
 @Service
 public class UserService {
@@ -28,4 +31,15 @@ public class UserService {
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));;
         repo.delete(u);
     }
+
+    public List<AuthResponse> getUser(List<User> users)
+    {
+        List<AuthResponse> response = users.stream()
+                .map(user -> new AuthResponse(user.getName(), user.getEmail()))
+                .toList();
+
+        return response;
+
+    }
+
 }

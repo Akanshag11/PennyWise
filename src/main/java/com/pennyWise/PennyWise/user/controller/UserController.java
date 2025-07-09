@@ -1,5 +1,6 @@
 package com.pennyWise.PennyWise.user.controller;
 
+import com.pennyWise.PennyWise.user.dto.AuthResponse;
 import com.pennyWise.PennyWise.user.dto.RegisterRequest;
 import com.pennyWise.PennyWise.user.model.User;
 import com.pennyWise.PennyWise.user.repository.UserRepository;
@@ -23,20 +24,25 @@ public class UserController {
     @Autowired
     private UserRepository userRepository;
 
+
     @GetMapping
-    public ResponseEntity<ArrayList<User>> getAllUsers() {
-        List<User> user=userRepository.findAll();
-        return  ResponseEntity.ok(new ArrayList<>(user));
+    public ResponseEntity<List<AuthResponse>> getAllUsers() {
+        List<User> users = userRepository.findAll();
+
+        return ResponseEntity.ok(service.getUser(users));
     }
+
     @GetMapping("id/{id}")
-    public ResponseEntity<Optional<User>> getUserById(@PathVariable long id) {
-        Optional<User> u = userRepository.findById(id);
-        if (u.isEmpty()) {
+    public ResponseEntity<List<AuthResponse>> getUserById(@PathVariable long id) {
+        Optional<User> userOpt = userRepository.findById(id);
+
+        if (userOpt.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
 
-        return ResponseEntity.ok(u);
+        return ResponseEntity.ok(service.getUser(List.of(userOpt.get())));
     }
+
 
     @PostMapping("/register")
     public ResponseEntity<String> register(@Valid @RequestBody RegisterRequest req) {
