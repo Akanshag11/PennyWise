@@ -1,5 +1,7 @@
 package com.pennyWise.PennyWise.user.controller;
 
+import com.pennyWise.PennyWise.user.dto.AuthResponse;
+import com.pennyWise.PennyWise.user.dto.LoginRequest;
 import com.pennyWise.PennyWise.user.dto.RegisterRequest;
 import com.pennyWise.PennyWise.user.model.User;
 import com.pennyWise.PennyWise.user.repository.UserRepository;
@@ -61,5 +63,12 @@ public class UserController {
         return ResponseEntity.ok("User deleted -> " + req.getEmail());
     }
 */
+
+    /*@PostMapping("/login")
+    public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest logreq)
+    {
+
+    }*/
+
     
 }
