@@ -24,6 +24,21 @@ public class UserController {
     private UserService service;
     @Autowired
     private UserRepository userRepository;
+    @PostMapping("/register")
+    public ResponseEntity<String> register(@Valid @RequestBody RegisterRequest req) {
+        if (userRepository.findByEmail(req.getEmail()).isPresent()) {
+            return ResponseEntity
+                    .status(HttpStatus.CONFLICT)
+                    .body("Email already registered -> " + req.getEmail());
+        }
+        service.register(req);
+        return ResponseEntity.ok("User registered -> " + req.getEmail());
+    }
+    
+    @PostMapping("/login")
+    public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest logreq) {
+        return ResponseEntity.ok().body(service.login (logreq));
+    }
 
 
    /* @GetMapping
@@ -47,16 +62,7 @@ public class UserController {
     }*/
 
 
-    @PostMapping("/register")
-    public ResponseEntity<String> register(@Valid @RequestBody RegisterRequest req) {
-        if (userRepository.findByEmail(req.getEmail()).isPresent()) {
-            return ResponseEntity
-                    .status(HttpStatus.CONFLICT)
-                    .body("Email already registered -> " + req.getEmail());
-        }
-        service.register(req);
-        return ResponseEntity.ok("User registered -> " + req.getEmail());
-    }
+    
    /* @DeleteMapping
     public ResponseEntity<String> deleteUser (@RequestBody RegisterRequest req) {
         service.deleteUser(req.getEmail ());

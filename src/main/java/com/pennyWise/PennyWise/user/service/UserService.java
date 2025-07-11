@@ -1,5 +1,7 @@
 package com.pennyWise.PennyWise.user.service;
 
+import com.pennyWise.PennyWise.jwt.JwtService;
+import com.pennyWise.PennyWise.user.dto.AuthResponse;
 import com.pennyWise.PennyWise.user.dto.LoginRequest;
 import com.pennyWise.PennyWise.user.dto.RegisterRequest;
 import com.pennyWise.PennyWise.user.model.User;
@@ -7,8 +9,6 @@ import com.pennyWise.PennyWise.user.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.List;
 
 @Service
 public class UserService {
@@ -18,6 +18,8 @@ public class UserService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private JwtService jwtService;
     
     public void register(RegisterRequest req) {
         if (repo.findByEmail(req.getEmail()).isPresent()) {
@@ -28,6 +30,14 @@ public class UserService {
         user1.setEmail(req.getEmail());
         user1.setPassword(passwordEncoder.encode(req.getPassword()));
         repo.save(user1);
+    }
+    public AuthResponse login(LoginRequest logreq){
+        User u = repo.findByEmail(logreq.email()).orElseThrow(() -> new IllegalArgumentException("User not found"));
+        if(!passwordEncoder.matches(logreq.password(), u.getPassword())) {
+            throw new IllegalArgumentException("Invalid password");
+        }
+        String token = jwtService.generateToken(u.getEmail());
+        return new AuthResponse (" Logged in Successfully 🎉", u.getName(),u.getEmail (),token);
     }
     
    /* public void deleteUser(String email) {
@@ -47,8 +57,5 @@ public class UserService {
     }
 */
 
-    public void login(LoginRequest logreq)
-    {
 
-    }
 }

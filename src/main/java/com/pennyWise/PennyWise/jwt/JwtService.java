@@ -4,13 +4,10 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.annotation.PostConstruct;
-import jakarta.validation.Valid;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.logging.structured.GraylogExtendedLogFormatProperties;
 import org.springframework.stereotype.Service;
 
-import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
 
@@ -19,9 +16,8 @@ public class JwtService {
 
     @Value("${jwt.secret}")
     public String secret;
-
+    
     private Key key;
-
     @PostConstruct
     public void init(){
         this.key=Keys.hmacShaKeyFor(secret.getBytes());
@@ -53,5 +49,4 @@ public class JwtService {
             return false;
         }
     }
-
 }
