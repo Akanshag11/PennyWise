@@ -37,7 +37,12 @@ public class UserService {
             throw new IllegalArgumentException("Invalid password");
         }
         String token = jwtService.generateToken(u.getEmail());
-        return new AuthResponse (" Logged in Successfully 🎉", u.getName(),u.getEmail (),token);
+        String refreshToken = jwtService.generateRefreshToken(u.getEmail());
+
+        u.setRefreshToken(refreshToken);
+        u.setRefreshTokenExpiry(jwtService.getExpiration(refreshToken));
+        repo.save(user);
+        return new AuthResponse (" Logged in Successfully 🎉", u.getName(),u.getEmail (),token,refreshToken);
     }
     
    /* public void deleteUser(String email) {

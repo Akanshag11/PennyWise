@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 
+import java.util.Date;
+
 @Data
 @Entity
 @Table(name="users")
@@ -20,5 +22,10 @@ public class User {
 
     @NotBlank
     private String password;
+
+    @Column(length=500)
+    private String refreshToken;
+
+    private Date refreshTokenExpiry;
 
 }

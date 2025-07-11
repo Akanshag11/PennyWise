@@ -1,9 +1,12 @@
 package com.pennyWise.PennyWise.user.controller;
 
+import com.pennyWise.PennyWise.jwt.JwtService;
 import com.pennyWise.PennyWise.user.dto.AuthResponse;
 import com.pennyWise.PennyWise.user.dto.LoginRequest;
 import com.pennyWise.PennyWise.user.dto.RegisterRequest;
+import com.pennyWise.PennyWise.user.model.BlacklistedToken;
 import com.pennyWise.PennyWise.user.model.User;
+import com.pennyWise.PennyWise.user.repository.BlacklistedTokenRepository;
 import com.pennyWise.PennyWise.user.repository.UserRepository;
 import com.pennyWise.PennyWise.user.service.UserService;
 
@@ -14,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,6 +28,13 @@ public class UserController {
     private UserService service;
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private BlacklistedTokenRepository blacklistRepo;
+
+    @Autowired
+    private JwtService jwtService;
+
     @PostMapping("/register")
     public ResponseEntity<String> register(@Valid @RequestBody RegisterRequest req) {
         if (userRepository.findByEmail(req.getEmail()).isPresent()) {
@@ -39,6 +50,42 @@ public class UserController {
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest logreq) {
         return ResponseEntity.ok().body(service.login (logreq));
     }
+
+    @PostMapping("/refresh-token")
+    public ResponseEntity<AuthResponse> refreshToken(@RequestBody String refreshToken) {
+        if (!jwtService.isTokenValid(refreshToken)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        String email = jwtService.extractEmail(refreshToken);
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (!refreshToken.equals(user.getRefreshToken()) || new Date().after(user.getRefreshTokenExpiry())) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        String newAccessToken = jwtService.generateToken(email);
+        return ResponseEntity.ok(new AuthResponse("Re-login successful",user.getName(), user.getEmail(), newAccessToken, refreshToken));
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(@RequestHeader("Authorization") String bearerToken) {
+        String token = bearerToken.replace("Bearer ", "");
+        String jti = jwtService.extractTokenId(token);
+        Date expiry = jwtService.getExpiration(token);
+
+        blacklistRepo.save(new BlacklistedToken(jti, expiry));
+        return ResponseEntity.ok("User logged out and token revoked");
+
+//        refreshtoken ko null krna userrepo me
+//        pass krnabh email on logout rather than the token
+
+//        TODO
+
+    }
+
+
 
 
    /* @GetMapping
