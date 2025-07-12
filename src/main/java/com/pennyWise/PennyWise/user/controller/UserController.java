@@ -45,44 +45,24 @@ public class UserController {
         service.register(req);
         return ResponseEntity.ok("User registered -> " + req.getEmail());
     }
-    
+
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest logreq) {
-        return ResponseEntity.ok().body(service.login (logreq));
+        return ResponseEntity.ok().body(service.login(logreq));
     }
 
     @PostMapping("/refresh-token")
     public ResponseEntity<AuthResponse> refreshToken(@RequestBody String refreshToken) {
-        if (!jwtService.isTokenValid(refreshToken)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-
-        String email = jwtService.extractEmail(refreshToken);
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        if (!refreshToken.equals(user.getRefreshToken()) || new Date().after(user.getRefreshTokenExpiry())) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-
-        String newAccessToken = jwtService.generateToken(email);
-        return ResponseEntity.ok(new AuthResponse("Re-login successful",user.getName(), user.getEmail(), newAccessToken, refreshToken));
+        return service.refreshTok(refreshToken);
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<String> logout(@RequestHeader("Authorization") String bearerToken) {
-        String token = bearerToken.replace("Bearer ", "");
-        String jti = jwtService.extractTokenId(token);
-        Date expiry = jwtService.getExpiration(token);
+    public ResponseEntity<String> logout(
+            @RequestHeader("Authorization") String bearerToken,
+            @RequestBody String email) {
 
-        blacklistRepo.save(new BlacklistedToken(jti, expiry));
-        return ResponseEntity.ok("User logged out and token revoked");
-
-//        refreshtoken ko null krna userrepo me
-//        pass krnabh email on logout rather than the token
-
-//        TODO
-
+        // 1. Blacklist the access token
+       return service.logout(bearerToken,email);
     }
 
 
@@ -123,5 +103,5 @@ public class UserController {
 
     }*/
 
-    
+
 }

@@ -1,6 +1,7 @@
 package com.pennyWise.PennyWise.jwt;
 
 import com.pennyWise.PennyWise.user.model.User;
+import com.pennyWise.PennyWise.user.repository.BlacklistedTokenRepository;
 import com.pennyWise.PennyWise.user.repository.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -26,25 +27,40 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Autowired
     UserRepository userRepository;
 
+    @Autowired
+    BlacklistedTokenRepository blacklistedTokenRepo;
+
+
     @Override
-    public void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException{
-        final String authHeader=request.getHeader("Authorization");
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
+                                    FilterChain filterChain) throws ServletException, IOException {
+
+        final String authHeader = request.getHeader("Authorization");
         final String jwt;
         final String userEmail;
+
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        jwt = authHeader.substring(7); // remove "Bearer "
+        jwt = authHeader.substring(7);
         userEmail = jwtService.extractEmail(jwt);
+
+        // ✅ Check if token is blacklisted
+        String jti = jwtService.extractTokenId(jwt);
+        if (blacklistedTokenRepo.existsByJti(jti)) {
+            response.setStatus(HttpStatus.UNAUTHORIZED.value());
+            response.getWriter().write("Token has been revoked");
+            return;
+        }
 
         if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             User user = userRepository.findByEmail(userEmail).orElse(null);
 
             if (user != null && jwtService.isTokenValid(jwt)) {
                 UsernamePasswordAuthenticationToken authToken =
-                        new UsernamePasswordAuthenticationToken(user, null, null); // No roles yet
+                        new UsernamePasswordAuthenticationToken(user, null, null);
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }
