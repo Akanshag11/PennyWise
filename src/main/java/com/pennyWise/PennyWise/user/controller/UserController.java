@@ -68,7 +68,7 @@ public class UserController {
             return ResponseEntity.badRequest().body("Invalid Authorization header format");
         }
 
-        String token = bearerToken.substring(7); // "Bearer " is 7 chars long
+        String token = bearerToken.substring(7).trim(); // "Bearer " is 7 chars long
         return service.logout(token);
     }
     
@@ -77,7 +77,8 @@ public class UserController {
         if(!bearerToken.startsWith("Bearer ")) {
             return ResponseEntity.badRequest().build();
         }
-        return ResponseEntity.ok().body(service.getProfile(bearerToken));
+        String token = bearerToken.substring(7).trim();
+        return ResponseEntity.ok().body(service.getProfile(token));
     }
     
     @DeleteMapping
@@ -85,7 +86,8 @@ public class UserController {
         if(!bearerToken.startsWith("Bearer ")) {
             return ResponseEntity.badRequest ().build ();
         }
-        service.deleteUser(bearerToken);
+        String token = bearerToken.substring(7).trim();
+        service.deleteUser(token);
         return ResponseEntity.ok("Account deleted successfully");
     }
 

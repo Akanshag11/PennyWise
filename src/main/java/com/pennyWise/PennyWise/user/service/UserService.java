@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 
@@ -75,15 +76,15 @@ public class UserService {
 
     public ResponseEntity<String> logout(String bearerToken) {
 
-        String token = bearerToken.replace("Bearer ", "");
-        String jti = jwtService.extractTokenId(token);
-        Date expiry = jwtService.getExpiration(token);
+
+        String jti = jwtService.extractTokenId(bearerToken);
+        Date expiry = jwtService.getExpiration(bearerToken);
 
         // Blacklist the token
         blacklistedToken.save(new BlacklistedToken(jti, expiry));
 
         // ✅ Extract email from token instead of receiving from body
-        String email = jwtService.extractEmail(token);
+        String email = jwtService.extractEmail(bearerToken);
         User user = repo.findByEmail(email).orElse(null);
         if (user == null) {
             System.out.println("Email from token: " + email);
@@ -98,18 +99,16 @@ public class UserService {
     }
     
     public AuthResponse getProfile(String bearerToken) {
-        String token = bearerToken.replace("Bearer ",  "");
         String email = jwtService.extractEmail (bearerToken);
         User user = repo.findByEmail(email).orElse(null);
-        return new AuthResponse ("Here is your profile ", user.getName (),user.getEmail (),token, user.getRefreshToken ());
+        return new AuthResponse ("Here is your profile ", user.getName (),user.getEmail (),bearerToken, user.getRefreshToken ());
     }
     
     public void deleteUser(String bearerToken) {
-        String token = bearerToken.replace("Bearer ",  "");
         String email = jwtService.extractEmail (bearerToken);
         User user = repo.findByEmail(email).orElse(null);
-        String jti = jwtService.extractTokenId(token);
-        Date expiry = jwtService.getExpiration(token);
+        String jti = jwtService.extractTokenId(bearerToken);
+        Date expiry = jwtService.getExpiration(bearerToken);
         blacklistedToken.save (new BlacklistedToken (jti, expiry));
         repo.delete(user);
     }
