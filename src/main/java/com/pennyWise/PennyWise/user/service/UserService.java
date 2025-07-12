@@ -96,6 +96,23 @@ public class UserService {
 
         return ResponseEntity.ok("User logged out: access token blacklisted, refresh token cleared.");
     }
+    
+    public AuthResponse getProfile(String bearerToken) {
+        String token = bearerToken.replace("Bearer ",  "");
+        String email = jwtService.extractEmail (bearerToken);
+        User user = repo.findByEmail(email).orElse(null);
+        return new AuthResponse ("Here is your profile ", user.getName (),user.getEmail (),token, user.getRefreshToken ());
+    }
+    
+    public void deleteUser(String bearerToken) {
+        String token = bearerToken.replace("Bearer ",  "");
+        String email = jwtService.extractEmail (bearerToken);
+        User user = repo.findByEmail(email).orElse(null);
+        String jti = jwtService.extractTokenId(token);
+        Date expiry = jwtService.getExpiration(token);
+        blacklistedToken.save (new BlacklistedToken (jti, expiry));
+        repo.delete(user);
+    }
 
 
 
