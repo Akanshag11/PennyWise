@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -58,12 +59,18 @@ public class UserController {
 
     @PostMapping("/logout")
     public ResponseEntity<String> logout(
-            @RequestHeader("Authorization") String bearerToken,
-            @RequestBody String email) {
+            @RequestHeader("Authorization") String bearerToken) {
 
-        // 1. Blacklist the access token
-       return service.logout(bearerToken,email);
+        // ✅ Strip "Bearer " prefix
+        if (!bearerToken.startsWith("Bearer ")) {
+            System.out.println(bearerToken);
+            return ResponseEntity.badRequest().body("Invalid Authorization header format");
+        }
+
+        String token = bearerToken.substring(7); // "Bearer " is 7 chars long
+        return service.logout(token);
     }
+
 
 
 

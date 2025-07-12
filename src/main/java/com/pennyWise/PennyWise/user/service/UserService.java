@@ -22,7 +22,6 @@ import java.util.Date;
 public class UserService {
     @Autowired
     private UserRepository repo;
-    private User user;
 
     @Autowired
     private BlacklistedTokenRepository blacklistedToken;
@@ -74,15 +73,20 @@ public class UserService {
     }
 
 
-    public ResponseEntity<String> logout(String bearerToken,String email) {
+    public ResponseEntity<String> logout(String bearerToken) {
+
         String token = bearerToken.replace("Bearer ", "");
         String jti = jwtService.extractTokenId(token);
         Date expiry = jwtService.getExpiration(token);
+
+        // Blacklist the token
         blacklistedToken.save(new BlacklistedToken(jti, expiry));
 
-        // 2. Nullify refresh token and its expiry for the user
+        // ✅ Extract email from token instead of receiving from body
+        String email = jwtService.extractEmail(token);
         User user = repo.findByEmail(email).orElse(null);
         if (user == null) {
+            System.out.println("Email from token: " + email);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
         }
 
@@ -92,6 +96,8 @@ public class UserService {
 
         return ResponseEntity.ok("User logged out: access token blacklisted, refresh token cleared.");
     }
+
+
 
 
    /* public void deleteUser(String email) {
