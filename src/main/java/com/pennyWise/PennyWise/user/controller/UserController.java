@@ -92,7 +92,7 @@ public class UserController {
     }
 
 
-//    TODO: CHANGE PASSWORD, RESET PASSWORD ENDPOINTS
+//    TODO: CHANGE PASSWORD, RESET PASSWORD ENDPOINTS, if the person is already logged in and tries again tell them that they are already logged in .ie bearer token is active
 
     
    /* @GetMapping
