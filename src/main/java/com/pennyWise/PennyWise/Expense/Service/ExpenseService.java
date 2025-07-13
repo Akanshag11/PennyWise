@@ -6,6 +6,7 @@ import com.pennyWise.PennyWise.jwt.JwtService;
 import com.pennyWise.PennyWise.user.model.User;
 import com.pennyWise.PennyWise.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import com.pennyWise.PennyWise.Expense.dto.ExpenseResponse;
 import com.pennyWise.PennyWise.Expense.dto.ExpenseRequest;
@@ -55,5 +56,27 @@ public class ExpenseService {
         expenseRepository.delete(expenseEntity);
 
     }
-    
+
+    public List<ExpenseResponse> filterExpenses(String token, String category, Double minAmount,
+                                                Double maxAmount, LocalDate startDate, LocalDate endDate) {
+
+        User user = jwtService.extractUser(token);
+
+        List<ExpenseEntity> filtered = expenseRepository.filterExpenses(
+                user, category, minAmount, maxAmount, startDate, endDate);
+
+
+
+
+        return filtered.stream()
+                .map(filter ->new ExpenseResponse(filter.getId (),
+                        filter.getTitle (),
+                        filter.getDescription (),
+                        filter.getAmount (),
+                        filter.getCategory (),
+                        filter.getDate ()))
+                .toList();
+    }
+
+
 }

@@ -2,6 +2,7 @@ package com.pennyWise.PennyWise.Expense.Controller;
 
 import com.pennyWise.PennyWise.Expense.Service.ExpenseService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.pennyWise.PennyWise.Expense.dto.ExpenseResponse;
@@ -58,4 +59,27 @@ public class ExpenseController {
     public ResponseEntity<String> updateExpense(@RequestHeader("Authorization") String bearerToken,@RequestBody ExpenseRequest expenseRequestDTO) {
         return ResponseEntity.ok("Expense updated");
     }
+
+    @GetMapping("/filter")
+    public ResponseEntity<List<ExpenseResponse>> filterExpenses(
+            @RequestHeader("Authorization") String bearerToken,
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) Double minAmount,
+            @RequestParam(required = false) Double maxAmount,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate
+    ) {
+        String token = bearerToken.replace("Bearer ", "");
+        List<ExpenseResponse> results = expenseService.filterExpenses(
+                token, category, minAmount, maxAmount, startDate, endDate);
+        if(results.isEmpty())
+        {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(results);
+    }
+
+//    @GetMapping("/sort")
+//    public ResponseEntity<List<ExpenseResponse>> SortExpense(@RequestHeader("Authorization") String bearerToken,)
+
 }
