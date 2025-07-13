@@ -92,6 +92,8 @@ public class UserController {
     }
 
 
+//    TODO: CHANGE PASSWORD, RESET PASSWORD ENDPOINTS
+
     
    /* @GetMapping
     public ResponseEntity<List<AuthResponse>> getAllUsers() {
@@ -127,6 +129,8 @@ public class UserController {
     {
 
     }*/
+
+
 
 
 }

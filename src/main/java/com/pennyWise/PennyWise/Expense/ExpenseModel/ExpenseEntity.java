@@ -2,25 +2,53 @@ package com.pennyWise.PennyWise.Expense.ExpenseModel;
 
 import com.pennyWise.PennyWise.user.model.User;
 import jakarta.persistence.*;
-import lombok.Data;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import lombok.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
-import java.sql.Time;
-import java.util.Date;
-
-@Data
 @Entity
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class ExpenseEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+
+    @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
+
+    @NotNull
     private String title;
+
     private String description;
+
+    @Positive
     private double amount;
+
+    @NotNull
     private String category;
-    private Date date;
-    private Time createdAt;
-    private Time updatedAt;
+
+    private LocalDate date;
+
+    private LocalDateTime createdAt;
+
+    private LocalDateTime updatedAt;
+
+    @PrePersist
+    public void prePersist() {
+        createdAt = LocalDateTime.now();
+        updatedAt = createdAt;
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
 }
