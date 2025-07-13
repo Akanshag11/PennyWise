@@ -17,7 +17,7 @@ public class ExpenseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
@@ -30,7 +30,7 @@ public class ExpenseEntity {
     private String description;
 
     @Positive
-    private double amount;
+    private Double amount;
 
     @NotNull
     private String category;

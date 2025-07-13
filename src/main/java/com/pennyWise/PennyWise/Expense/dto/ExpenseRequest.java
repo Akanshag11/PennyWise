@@ -11,6 +11,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+
 public class ExpenseRequest {
     @NotBlank
     private String title;
@@ -18,7 +19,7 @@ public class ExpenseRequest {
     private String description;
 
     @Positive
-    private double amount;
+    private Double amount;
 
     @NotBlank
     private String category;
