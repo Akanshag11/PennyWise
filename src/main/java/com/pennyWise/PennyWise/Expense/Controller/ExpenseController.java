@@ -51,12 +51,22 @@ public class ExpenseController {
 
     @DeleteMapping
     public ResponseEntity<String> clearAllExpenses(@RequestHeader("Authorization") String bearerToken) {
-        return ResponseEntity.ok("Expense deleted");
+        if(!bearerToken.startsWith ("Bearer ")) {
+            return ResponseEntity.badRequest ().build ();
+        }
+        String token = bearerToken.substring (7).trim ();
+        expenseService.clearAllExpenses(token);
+        return ResponseEntity.ok("All Expense deleted");
     }
     
     
-    @PutMapping("/updateExpense")
-    public ResponseEntity<String> updateExpense(@RequestHeader("Authorization") String bearerToken,@RequestBody ExpenseRequest expenseRequestDTO) {
+    @PutMapping("/updateExpense/id/{id}")
+    public ResponseEntity<String> updateExpense(@RequestHeader("Authorization") String bearerToken, @PathVariable Long id,@RequestBody ExpenseRequest expenseRequest) {
+        if(!bearerToken.startsWith ("Bearer ")) {
+            return ResponseEntity.badRequest ().build ();
+        }
+        String token = bearerToken.substring (7).trim ();
+        expenseService.updateExpense(token, id,expenseRequest);
         return ResponseEntity.ok("Expense updated");
     }
 

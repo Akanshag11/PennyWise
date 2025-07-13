@@ -59,15 +59,9 @@ public class ExpenseService {
 
     public List<ExpenseResponse> filterExpenses(String token, String category, Double minAmount,
                                                 Double maxAmount, LocalDate startDate, LocalDate endDate) {
-
         User user = jwtService.extractUser(token);
-
         List<ExpenseEntity> filtered = expenseRepository.filterExpenses(
                 user, category, minAmount, maxAmount, startDate, endDate);
-
-
-
-
         return filtered.stream()
                 .map(filter ->new ExpenseResponse(filter.getId (),
                         filter.getTitle (),
@@ -77,6 +71,23 @@ public class ExpenseService {
                         filter.getDate ()))
                 .toList();
     }
+    public void clearAllExpenses(String token) {
+        User u=jwtService.extractUser(token);
+        List<ExpenseEntity> expenseEntity=expenseRepository.findByUser(u);
+        expenseRepository.deleteAll (expenseEntity);
+    }
 
-
+    public void updateExpense(String token, Long expesneId, ExpenseRequest expenseRequest) {
+        User user = jwtService.extractUser (token);
+        ExpenseEntity expenseEntity = expenseRepository.findById (expesneId).orElse (null);
+        if (!expenseEntity.getUser().getId().equals(user.getId())) {
+             throw new RuntimeException("Unauthorized to update this expense");
+        }
+                expenseEntity.setTitle (expenseRequest.getTitle ());
+                expenseEntity.setDescription (expenseRequest.getDescription ());
+                expenseEntity.setAmount (expenseRequest.getAmount ());
+                expenseEntity.setCategory (expenseRequest.getCategory ());
+                expenseEntity.setDate (expenseRequest.getDate ());
+                expenseRepository.save (expenseEntity);
+    }
 }

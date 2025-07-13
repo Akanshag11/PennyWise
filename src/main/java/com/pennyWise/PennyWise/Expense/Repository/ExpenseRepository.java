@@ -30,5 +30,11 @@ public interface ExpenseRepository extends JpaRepository<ExpenseEntity, Long> {
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate
     );
+    void deleteAll(Iterable<? extends ExpenseEntity> entities);
+   //another way of writing the above method
+   /*@Modifying
+    @Transactional
+    @Query("DELETE FROM ExpenseEntity e WHERE e.user = :user")
+    void deleteAllExpensesByUser(@Param("user") User user);*/
 
 }
