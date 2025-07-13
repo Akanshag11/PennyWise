@@ -13,6 +13,6 @@ import java.util.Optional;
 public interface ExpenseRepository extends JpaRepository<ExpenseEntity, Long> {
     //Optional<ExpenseEntity> findByEmail(String email);
     List<ExpenseEntity> findByUser(User user);
-    
-    void deleteExpenseById(User user, Long id);
+
+    Optional<ExpenseEntity> findById(Long id);
 }

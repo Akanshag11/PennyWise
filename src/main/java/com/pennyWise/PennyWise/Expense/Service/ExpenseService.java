@@ -49,9 +49,11 @@ public class ExpenseService {
     }
     
     public void deleteExpense(String token, Long id) {
-        String email = jwtService.extractEmail (token);
-        User user = userRepository.findByEmail (email).orElse (null);
-        expenseRepository.deleteExpenseById (user, id);
+
+        User u=jwtService.extractUser(token);
+        ExpenseEntity expenseEntity=expenseRepository.findById(id).orElse(null);
+        expenseRepository.delete(expenseEntity);
+
     }
     
 }

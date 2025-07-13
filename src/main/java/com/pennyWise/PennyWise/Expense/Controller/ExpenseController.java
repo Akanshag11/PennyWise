@@ -39,7 +39,7 @@ public class ExpenseController {
     }
     
     @DeleteMapping("id/{id}")
-    public ResponseEntity<String> deleteExpense(@RequestHeader("Authorization") String bearerToken,@RequestParam Long id) {
+    public ResponseEntity<String> deleteExpense(@RequestHeader("Authorization") String bearerToken,@PathVariable Long id) {
         if(!bearerToken.startsWith ("Bearer ")) {
             return ResponseEntity.badRequest ().build ();
         }
@@ -47,9 +47,9 @@ public class ExpenseController {
         expenseService.deleteExpense(token, id);
         return ResponseEntity.ok ("Expense has been successfully deleted!");
     }
-    
+
     @DeleteMapping
-    public ResponseEntity<String> deleteExpense(@RequestHeader("Authorization") String bearerToken) {
+    public ResponseEntity<String> clearAllExpenses(@RequestHeader("Authorization") String bearerToken) {
         return ResponseEntity.ok("Expense deleted");
     }
     
