@@ -77,9 +77,9 @@ public class ExpenseService {
         expenseRepository.deleteAll (expenseEntity);
     }
 
-    public void updateExpense(String token, Long expesneId, ExpenseRequest expenseRequest) {
+    public void updateExpense(String token, Long expenseId, ExpenseRequest expenseRequest) {
         User user = jwtService.extractUser (token);
-        ExpenseEntity expenseEntity = expenseRepository.findById (expesneId).orElse (null);
+        ExpenseEntity expenseEntity= expenseRepository.findById (expenseId).orElse(null);
         if (!expenseEntity.getUser().getId().equals(user.getId())) {
              throw new RuntimeException("Unauthorized to update this expense");
         }

@@ -66,9 +66,11 @@ public class ExpenseController {
             return ResponseEntity.badRequest ().build ();
         }
         String token = bearerToken.substring (7).trim ();
-        expenseService.updateExpense(token, id,expenseRequest);
+        expenseService.updateExpense(token, id, expenseRequest);
         return ResponseEntity.ok("Expense updated");
     }
+
+
 
     @GetMapping("/filter")
     public ResponseEntity<List<ExpenseResponse>> filterExpenses(
@@ -79,7 +81,7 @@ public class ExpenseController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate
     ) {
-        String token = bearerToken.replace("Bearer ", "");
+        String token = bearerToken.replace("Bearer ", "").trim();
         List<ExpenseResponse> results = expenseService.filterExpenses(
                 token, category, minAmount, maxAmount, startDate, endDate);
         if(results.isEmpty())
