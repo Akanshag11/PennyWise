@@ -91,7 +91,13 @@ public class ExpenseController {
         return ResponseEntity.ok(results);
     }
 
-//    @GetMapping("/sort")
-//    public ResponseEntity<List<ExpenseResponse>> SortExpense(@RequestHeader("Authorization") String bearerToken,)
+    @GetMapping("/sortbyAmount")
+    public ResponseEntity<List<ExpenseResponse>> SortExpenseByAmount(@RequestHeader("Authorization") String bearerToken,@RequestParam(defaultValue = "desc") String dir){
+        String token = bearerToken.replace("Bearer ", "").trim();
+        boolean ascending=dir.equalsIgnoreCase("asc");
+        List<ExpenseResponse> results = expenseService.sortExpensebyAmount(
+                token, ascending);
+        return ResponseEntity.ok(results);
+    }
 
 }

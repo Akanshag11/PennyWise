@@ -2,6 +2,7 @@ package com.pennyWise.PennyWise.Expense.Repository;
 
 import com.pennyWise.PennyWise.Expense.ExpenseModel.ExpenseEntity;
 import com.pennyWise.PennyWise.user.model.User;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -36,5 +37,6 @@ public interface ExpenseRepository extends JpaRepository<ExpenseEntity, Long> {
     @Transactional
     @Query("DELETE FROM ExpenseEntity e WHERE e.user = :user")
     void deleteAllExpensesByUser(@Param("user") User user);*/
-
+    @Query("Select e FROM ExpenseEntity e WHERE e.user=:user")
+    List<ExpenseEntity> findByUser(@Param("user") User user, Sort sort);
 }
