@@ -1,15 +1,22 @@
 package com.pennyWise.PennyWise.investment.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.time.LocalDate;
 
+@Data
+@NoArgsConstructor
+@Builder
+@AllArgsConstructor
 public class InvestmentResponseDTO {
-    public class InvestmentResponse {
+
         private Long id;
         private String type;
-        private String platform;
         private Double amount;
-        private Double returnsPercentage;
+
         private LocalDate investedDate;
-        private String assetName;
-    }
+
 }

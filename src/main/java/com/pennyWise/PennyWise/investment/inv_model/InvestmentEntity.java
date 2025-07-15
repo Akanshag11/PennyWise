@@ -1,13 +1,20 @@
 package com.pennyWise.PennyWise.investment.inv_model;
 
 import com.pennyWise.PennyWise.user.model.User;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import org.springframework.data.annotation.Id;
+
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+@Data
+@Entity
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 
 public class InvestmentEntity {
     @Id
@@ -15,13 +22,10 @@ public class InvestmentEntity {
     private Long id;
     
     private String type; // e.g., Stock, SIP, Crypto
-    private String platform; // Zerodha, Groww, Coin, etc.
     
     private Double amount;
     
     private LocalDate investedDate;
-    
-    private String assetName; // e.g., Infosys, Bitcoin
     
     @ManyToOne
     @JoinColumn(name = "user_id")
